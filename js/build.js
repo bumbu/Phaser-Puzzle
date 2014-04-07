@@ -92,9 +92,9 @@ function render() {
 }
 
 function handleMouseDown(ev) {
-  Phaser.Physics.P2.vec2.set(selection.mousePoint, ev.offsetX, ev.offsetY)
+  Phaser.Physics.P2.vec2.set(selection.mousePoint, ev.pageX, ev.pageY)
 
-  // var mousePoint = new Phaser.Point(ev.offsetX, ev.offsetY)
+  // var mousePoint = new Phaser.Point(ev.pageX, ev.pageY)
   var hits = game.physics.p2.hitTest(new Phaser.Point(selection.mousePoint[0], selection.mousePoint[1]), p.slice(), 2, true)
 
   // Remove old objects if any
@@ -102,7 +102,7 @@ function handleMouseDown(ev) {
 
     // console.log(hits)
   if (hits.length > 0) {
-    console.log(hits)
+    // console.log(hits)
     selection.body = hits[0]
     game.physics.p2.addBody(selection.nullBody)
     selection.nullBody.static = true
@@ -114,7 +114,7 @@ function handleMouseDown(ev) {
 
 function handleMouseMove(ev) {
   if (selection.body !== null && selection.constraint !== null) {
-    Phaser.Physics.P2.vec2.set(selection.mousePoint, pxmi(ev.offsetX), pxmi(ev.offsetY))
+    Phaser.Physics.P2.vec2.set(selection.mousePoint, pxmi(ev.pageX), pxmi(ev.pageY))
 
     // Wake up bodies
     selection.constraint.bodyA.wakeUp();
