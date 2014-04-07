@@ -71,6 +71,12 @@ function create() {
 
   // Add null body for selection
   selection.nullBody = new Phaser.Physics.P2.Body(game)
+
+  function noCollisions(bodyA, bodyB) {
+    return false;
+  }
+  // Disable any collisions
+  game.physics.p2.setPostBroadphaseCallback(noCollisions, this);
 }
 
 function update() {
