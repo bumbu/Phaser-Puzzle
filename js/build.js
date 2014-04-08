@@ -14,13 +14,17 @@ function pxmi(v) {
   return v * -0.05;
 }
 
+function ipxmi(v) {
+  return v * -20;
+}
+
 var p = [];
 var selection = {
   body: null
 , nullBody: null
 , constraint: null
 , mousePoint: Phaser.Physics.P2.vec2.create()
-, bodyPoint: null
+, bodyPoint: {x: 0, y: 0}
 }
 
 function create() {
@@ -49,6 +53,9 @@ function create() {
     p[i-1].body.loadPolygon('physicsData', 'p'+i);
     p[i-1].body.damping = 1
     p[i-1].body.applyDamping(true)
+
+    p[i-1].inputEnabled = true
+    p[i-1].input.useHandCursor = true
   }
 
   /**
@@ -94,18 +101,20 @@ function render() {
 function handleMouseDown(ev) {
   Phaser.Physics.P2.vec2.set(selection.mousePoint, ev.pageX, ev.pageY)
 
-  // var mousePoint = new Phaser.Point(ev.pageX, ev.pageY)
   var hits = game.physics.p2.hitTest(new Phaser.Point(selection.mousePoint[0], selection.mousePoint[1]), p.slice(), 2, true)
 
   // Remove old objects if any
   handleMouseUp()
 
-    // console.log(hits)
   if (hits.length > 0) {
-    // console.log(hits)
     selection.body = hits[0]
     game.physics.p2.addBody(selection.nullBody)
     selection.nullBody.static = true
+
+    Phaser.Physics.P2.vec2.set(selection.mousePoint, ipxmi(selection.body.position[0]), ipxmi(selection.body.position[1]))
+
+    selection.bodyPoint.x = (selection.body.position[0]) - pxmi(ev.pageX)
+    selection.bodyPoint.y = (selection.body.position[1]) - pxmi(ev.pageY)
 
     // Create constraint
     selection.constraint =  game.physics.p2.createRevoluteConstraint(selection.nullBody, selection.mousePoint, selection.body, [0, 0]);
@@ -114,7 +123,7 @@ function handleMouseDown(ev) {
 
 function handleMouseMove(ev) {
   if (selection.body !== null && selection.constraint !== null) {
-    Phaser.Physics.P2.vec2.set(selection.mousePoint, pxmi(ev.pageX), pxmi(ev.pageY))
+    Phaser.Physics.P2.vec2.set(selection.mousePoint, pxmi(ev.pageX) + selection.bodyPoint.x, pxmi(ev.pageY) + selection.bodyPoint.y)
 
     // Wake up bodies
     selection.constraint.bodyA.wakeUp();
